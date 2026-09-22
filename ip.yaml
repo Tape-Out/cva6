@@ -23,6 +23,7 @@ params:
   cfg:
     type: choice
     values:
+    - xirang
     - cv32a60x
     - cv32a65x
     - cv32a6_ima_sv32_fpga
@@ -36,6 +37,127 @@ params:
     - cv64a6_imafdch_sv39
     - cv64a6_imafdch_sv39_wb
     default: cv64a6_imafdc_sv39
+  xlen:
+    type: choice
+    values:
+    - 32
+    - 64
+    default: 64
+  axiIdWidth:
+    type: int
+    default: 4
+    range:
+    - 1
+    - 8
+  axiAddrWidth:
+    type: choice
+    values:
+    - 32
+    - 64
+    default: 64
+  axiDataWidth:
+    type: choice
+    values:
+    - 32
+    - 64
+    - 128
+    default: 64
+  icacheByteSize:
+    type: choice
+    values:
+    - 4096
+    - 8192
+    - 16384
+    - 32768
+    default: 16384
+  icacheSetAssoc:
+    type: choice
+    values:
+    - 2
+    - 4
+    - 8
+    default: 4
+  icacheLineWidth:
+    type: choice
+    values:
+    - 128
+    - 256
+    default: 128
+  dcacheByteSize:
+    type: choice
+    values:
+    - 8192
+    - 16384
+    - 32768
+    - 65536
+    default: 32768
+  dcacheSetAssoc:
+    type: choice
+    values:
+    - 2
+    - 4
+    - 8
+    default: 8
+  dcacheLineWidth:
+    type: choice
+    values:
+    - 128
+    - 256
+    default: 128
+  btbEntries:
+    type: choice
+    values:
+    - 0
+    - 8
+    - 16
+    - 32
+    - 64
+    default: 32
+  bhtEntries:
+    type: choice
+    values:
+    - 0
+    - 32
+    - 64
+    - 128
+    - 256
+    default: 128
+  rasDepth:
+    type: choice
+    values:
+    - 0
+    - 2
+    - 4
+    - 8
+    default: 2
+  scoreboardEntries:
+    type: choice
+    values:
+    - 4
+    - 8
+    - 16
+    default: 8
+  loadBufEntries:
+    type: choice
+    values:
+    - 2
+    - 4
+    - 8
+    default: 2
+  pmpEntries:
+    type: choice
+    values:
+    - 0
+    - 8
+    - 16
+    default: 8
+  wbufDepth:
+    type: choice
+    values:
+    - 4
+    - 8
+    - 16
+    default: 8
 emit:
 - kind: foreign
   lang: sv
@@ -300,6 +422,9 @@ emit:
   - third_party/cva6/core/cva6_mmu/cva6_ptw.sv
   - third_party/cva6/core/cva6_mmu/cva6_tlb.sv
   - third_party/cva6/core/cva6_mmu/cva6_shared_tlb.sv
+  - path: gen/cva6_config_pkg.sv
+    when:
+      cfg: xirang
   includes:
   - third_party/cva6/core/include
   - third_party/cva6/vendor/pulp-platform/common_cells/include
@@ -354,14 +479,118 @@ emit:
       probes: rvfi_probes_o
   limits:
   - 对外是一条打包成结构体的 AXI（noc_req_o／noc_resp_i），不是逐根线的 AXI 端口
-  - CVA6Cfg 是 17270 位的结构体参数，改配置靠换 core/include/<变体>_config_pkg.sv，本仓把这一步做成 cfg 旋钮
   - AccCfg 是 acc_cfg_t 结构体，留在默认值 '0 上
   - cv64a6_imafdcv_sv39（向量）这一档上游自身编不过，未纳入取值域
   - core/acc_dispatcher.sv 不在清单里：支持的 12 档都不开加速器接口，实测拿掉之后十二档展开一字不差。要支持向量档时连它一起按 when 加回来
   - 烘焙成纯 Verilog 走不通：sv2v 0.0.13 在这份设计上会指数膨胀（四分钟 6 GB、中间件 500 MB），同一条链路烘 Ibex 与 CV32E40P 都能逐字节复现，所以是 CVA6 独有、尚未定位。展开与回执不受影响
+  - 生成器以 cv64a6_imafdc_sv39 为模板，只换暴露出去的字段；没暴露的保持上游值，上游加了字段也不会漏
+  - cfg=xirang 由息壤的 generate 按旋钮改写上游的配置包生成；xlen 决定照哪一份改（64 位用 cv64a6_imafdc_sv39，32 位用 cv32a6_imac_sv32），因为字长牵动整份配置，不是一个能单独翻的字段
+  - 其余十二档用上游原件，那时这些字段旋钮不起作用
+  generate:
+  - out: gen/cva6_config_pkg.sv
+    from: third_party/cva6/core/include/cv64a6_imafdc_sv39_config_pkg.sv
+    when:
+      cfg: xirang
+      xlen: 64
+    syntax: localparam
+    set:
+      axiIdWidth: CVA6ConfigAxiIdWidth
+      axiAddrWidth: CVA6ConfigAxiAddrWidth
+      axiDataWidth: CVA6ConfigAxiDataWidth
+      icacheByteSize: CVA6ConfigIcacheByteSize
+      icacheSetAssoc: CVA6ConfigIcacheSetAssoc
+      icacheLineWidth: CVA6ConfigIcacheLineWidth
+      dcacheByteSize: CVA6ConfigDcacheByteSize
+      dcacheSetAssoc: CVA6ConfigDcacheSetAssoc
+      dcacheLineWidth: CVA6ConfigDcacheLineWidth
+      btbEntries: CVA6ConfigBTBEntries
+      bhtEntries: CVA6ConfigBHTEntries
+      rasDepth: CVA6ConfigRASDepth
+      scoreboardEntries: CVA6ConfigNrScoreboardEntries
+      loadBufEntries: CVA6ConfigNrLoadBufEntries
+      pmpEntries: CVA6ConfigNrPMPEntries
+      wbufDepth: CVA6ConfigWtDcacheWbufDepth
+      rvf: CVA6ConfigRVF
+      rvd: CVA6ConfigRVD
+      cExt: CVA6ConfigCExtEn
+      aExt: CVA6ConfigAExtEn
+      bExt: CVA6ConfigBExtEn
+      zcbExt: CVA6ConfigZcbExtEn
+      zicond: CVA6ConfigRVZiCond
+      cvxif: CVA6ConfigCvxifEn
+      mmu: CVA6ConfigMmuPresent
+      perfCounter: CVA6ConfigPerfCounterEn
+      tval: CVA6ConfigTvalEn
+  - out: gen/cva6_config_pkg.sv
+    from: third_party/cva6/core/include/cv32a6_imac_sv32_config_pkg.sv
+    when:
+      cfg: xirang
+      xlen: 32
+    syntax: localparam
+    set:
+      axiIdWidth: CVA6ConfigAxiIdWidth
+      axiAddrWidth: CVA6ConfigAxiAddrWidth
+      axiDataWidth: CVA6ConfigAxiDataWidth
+      icacheByteSize: CVA6ConfigIcacheByteSize
+      icacheSetAssoc: CVA6ConfigIcacheSetAssoc
+      icacheLineWidth: CVA6ConfigIcacheLineWidth
+      dcacheByteSize: CVA6ConfigDcacheByteSize
+      dcacheSetAssoc: CVA6ConfigDcacheSetAssoc
+      dcacheLineWidth: CVA6ConfigDcacheLineWidth
+      btbEntries: CVA6ConfigBTBEntries
+      bhtEntries: CVA6ConfigBHTEntries
+      rasDepth: CVA6ConfigRASDepth
+      scoreboardEntries: CVA6ConfigNrScoreboardEntries
+      loadBufEntries: CVA6ConfigNrLoadBufEntries
+      pmpEntries: CVA6ConfigNrPMPEntries
+      wbufDepth: CVA6ConfigWtDcacheWbufDepth
+      rvf: CVA6ConfigRVF
+      rvd: CVA6ConfigRVD
+      cExt: CVA6ConfigCExtEn
+      aExt: CVA6ConfigAExtEn
+      zcbExt: CVA6ConfigZcbExtEn
+      zicond: CVA6ConfigRVZiCond
+      cvxif: CVA6ConfigCvxifEn
+      mmu: CVA6ConfigMmuPresent
+      perfCounter: CVA6ConfigPerfCounterEn
+      tval: CVA6ConfigTvalEn
 test:
   noarea:
   - cfg
 targets:
   foreign:
     driver: foreign
+features:
+  rvf:
+    type: bool
+    default: true
+  rvd:
+    type: bool
+    default: true
+  cExt:
+    type: bool
+    default: true
+  aExt:
+    type: bool
+    default: true
+  bExt:
+    type: bool
+    default: true
+  zcbExt:
+    type: bool
+    default: true
+  zicond:
+    type: bool
+    default: true
+  cvxif:
+    type: bool
+    default: true
+  mmu:
+    type: bool
+    default: true
+  perfCounter:
+    type: bool
+    default: true
+  tval:
+    type: bool
+    default: true

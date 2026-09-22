@@ -11,11 +11,13 @@ Part of the [Tape-Out](https://github.com/Tape-Out) IP library, wired up by
 
 ## What this repository adds
 
-CVA6 is not configured by a handful of scalar parameters. Its whole configuration is one
-struct, `config_pkg::cva6_cfg_t`, 17270 bits wide, and you pick a variant by choosing which
-`core/include/<variant>_config_pkg.sv` gets compiled — upstream calls that `TARGET_CFG`.
+CVA6 is not configured by scalar parameters. Its whole configuration is one struct,
+`config_pkg::cva6_cfg_t`, built from 49 `localparam`s in a per-variant package; you pick a
+variant by choosing which `core/include/<variant>_config_pkg.sv` gets compiled — upstream
+calls that `TARGET_CFG`. There is **no macro anywhere** in those thirteen files, so `-D`
+cannot reach any of it.
 
-So the knob here selects a source file rather than a parameter value:
+So there are two kinds of knob here. The first selects a source file:
 
 ```yaml
 params:
@@ -35,6 +37,30 @@ rtl:
 
 Twelve variants, each elaborated on its own: 32-bit and 64-bit, with and without FPU,
 hypervisor, write-back cache, HPDcache, and the OpenPiton L1.5 adapter.
+
+The second kind is a **fourteenth variant that xirang writes**. `cfg: xirang` takes one of
+upstream's packages as a template and rewrites only the fields declared in the manifest —
+everything else keeps the upstream value, so a field added upstream is never silently
+dropped:
+
+```yaml
+generate:
+- out: gen/cva6_config_pkg.sv
+  from: third_party/cva6/core/include/cv64a6_imafdc_sv39_config_pkg.sv
+  when: {cfg: xirang, xlen: 64}
+  set: {dcacheByteSize: CVA6ConfigDcacheByteSize, btbEntries: CVA6ConfigBTBEntries, …}
+```
+
+That turns 27 of those `localparam`s into real knobs: cache sizes, associativity and line
+width for both caches, AXI widths, BTB/BHT/RAS depths, scoreboard and load-buffer entries,
+PMP entries, and the extension switches. `xlen` picks which template is used, because word
+length runs through the whole configuration and is not a field you can flip on its own.
+
+Every name in `set:` must match exactly once in the template. That check earns its keep: the
+32-bit package has no `CVA6ConfigBExtEn`, and the mismatch was caught the first time it ran
+instead of quietly changing nothing.
+
+The matrix is **63 points** and every one of them elaborates.
 
 ## Testing
 
