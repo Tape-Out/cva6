@@ -9,3 +9,4 @@ build/
 *.fst
 __pycache__/
 dist/
+gen/
