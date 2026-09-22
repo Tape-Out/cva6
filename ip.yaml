@@ -91,6 +91,42 @@ emit:
   - third_party/cva6/core/cvfpu/src/fpu_div_sqrt_mvp/hdl/nrbd_nrsc_mvp.sv
   - third_party/cva6/core/cvfpu/src/fpu_div_sqrt_mvp/hdl/preprocess_mvp.sv
   - third_party/cva6/core/include/config_pkg.sv
+  - path: third_party/cva6/core/include/cv32a60x_config_pkg.sv
+    when:
+      cfg: cv32a60x
+  - path: third_party/cva6/core/include/cv32a65x_config_pkg.sv
+    when:
+      cfg: cv32a65x
+  - path: third_party/cva6/core/include/cv32a6_ima_sv32_fpga_config_pkg.sv
+    when:
+      cfg: cv32a6_ima_sv32_fpga
+  - path: third_party/cva6/core/include/cv32a6_imac_sv32_config_pkg.sv
+    when:
+      cfg: cv32a6_imac_sv32
+  - path: third_party/cva6/core/include/cv64a60ax_config_pkg.sv
+    when:
+      cfg: cv64a60ax
+  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_config_pkg.sv
+    when:
+      cfg: cv64a6_imafdc_sv39
+  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv
+    when:
+      cfg: cv64a6_imafdc_sv39_hpdcache
+  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_hpdcache_wb_config_pkg.sv
+    when:
+      cfg: cv64a6_imafdc_sv39_hpdcache_wb
+  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_openpiton_config_pkg.sv
+    when:
+      cfg: cv64a6_imafdc_sv39_openpiton
+  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_wb_config_pkg.sv
+    when:
+      cfg: cv64a6_imafdc_sv39_wb
+  - path: third_party/cva6/core/include/cv64a6_imafdch_sv39_config_pkg.sv
+    when:
+      cfg: cv64a6_imafdch_sv39
+  - path: third_party/cva6/core/include/cv64a6_imafdch_sv39_wb_config_pkg.sv
+    when:
+      cfg: cv64a6_imafdch_sv39_wb
   - third_party/cva6/core/include/riscv_pkg.sv
   - third_party/cva6/core/include/ariane_pkg.sv
   - third_party/cva6/vendor/pulp-platform/axi/src/axi_pkg.sv
@@ -161,7 +197,6 @@ emit:
   - third_party/cva6/core/commit_stage.sv
   - third_party/cva6/core/axi_shim.sv
   - third_party/cva6/core/cva6_accel_first_pass_decoder_stub.sv
-  - third_party/cva6/core/acc_dispatcher.sv
   - third_party/cva6/core/cva6_fifo_v3.sv
   - third_party/cva6/core/frontend/btb.sv
   - third_party/cva6/core/frontend/bht.sv
@@ -265,42 +300,6 @@ emit:
   - third_party/cva6/core/cva6_mmu/cva6_ptw.sv
   - third_party/cva6/core/cva6_mmu/cva6_tlb.sv
   - third_party/cva6/core/cva6_mmu/cva6_shared_tlb.sv
-  - path: third_party/cva6/core/include/cv32a60x_config_pkg.sv
-    when:
-      cfg: cv32a60x
-  - path: third_party/cva6/core/include/cv32a65x_config_pkg.sv
-    when:
-      cfg: cv32a65x
-  - path: third_party/cva6/core/include/cv32a6_ima_sv32_fpga_config_pkg.sv
-    when:
-      cfg: cv32a6_ima_sv32_fpga
-  - path: third_party/cva6/core/include/cv32a6_imac_sv32_config_pkg.sv
-    when:
-      cfg: cv32a6_imac_sv32
-  - path: third_party/cva6/core/include/cv64a60ax_config_pkg.sv
-    when:
-      cfg: cv64a60ax
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_hpdcache
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_hpdcache_wb_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_hpdcache_wb
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_openpiton_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_openpiton
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_wb_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_wb
-  - path: third_party/cva6/core/include/cv64a6_imafdch_sv39_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdch_sv39
-  - path: third_party/cva6/core/include/cv64a6_imafdch_sv39_wb_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdch_sv39_wb
   includes:
   - third_party/cva6/core/include
   - third_party/cva6/vendor/pulp-platform/common_cells/include
@@ -358,6 +357,8 @@ emit:
   - CVA6Cfg 是 17270 位的结构体参数，改配置靠换 core/include/<变体>_config_pkg.sv，本仓把这一步做成 cfg 旋钮
   - AccCfg 是 acc_cfg_t 结构体，留在默认值 '0 上
   - cv64a6_imafdcv_sv39（向量）这一档上游自身编不过，未纳入取值域
+  - core/acc_dispatcher.sv 不在清单里：支持的 12 档都不开加速器接口，实测拿掉之后十二档展开一字不差。要支持向量档时连它一起按 when 加回来
+  - 烘焙成纯 Verilog 走不通：sv2v 0.0.13 在这份设计上会指数膨胀（四分钟 6 GB、中间件 500 MB），同一条链路烘 Ibex 与 CV32E40P 都能逐字节复现，所以是 CVA6 独有、尚未定位。展开与回执不受影响
 test:
   noarea:
   - cfg

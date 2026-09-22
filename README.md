@@ -54,8 +54,11 @@ Turning those into wires belongs outside this repository.
 
 `AccCfg` is an `acc_cfg_t` struct and stays at `'0`.
 
-Baking to plain Verilog does not work yet: sv2v 0.0.13 stops on a nested struct assignment in
-`acc_dispatcher.sv`. Elaboration and the receipt are unaffected.
+Baking to plain Verilog does not work. sv2v 0.0.13 blows up on this design: it reaches 6 GB of
+memory in four minutes and produces a 500 MB intermediate, whichever way the simulation-only
+regions and the `VERILATOR` / `XSIM` guards are arranged. The same path bakes Ibex and
+CV32E40P byte-for-byte reproducibly, so this is specific to CVA6 and not yet diagnosed.
+Elaboration of all twelve variants and the declaration receipt are unaffected.
 
 ## License
 
