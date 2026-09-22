@@ -23,13 +23,12 @@ params:
   cfg:
     type: choice
     values:
-    - xirang
+    - cv64a6_imafdc_sv39
     - cv32a60x
     - cv32a65x
     - cv32a6_ima_sv32_fpga
     - cv32a6_imac_sv32
     - cv64a60ax
-    - cv64a6_imafdc_sv39
     - cv64a6_imafdc_sv39_hpdcache
     - cv64a6_imafdc_sv39_hpdcache_wb
     - cv64a6_imafdc_sv39_openpiton
@@ -37,127 +36,22 @@ params:
     - cv64a6_imafdch_sv39
     - cv64a6_imafdch_sv39_wb
     default: cv64a6_imafdc_sv39
-  xlen:
+  dataUserWidth:
     type: choice
     values:
-    - 32
-    - 64
-    default: 64
-  axiIdWidth:
-    type: int
-    default: 4
-    range:
     - 1
-    - 8
-  axiAddrWidth:
-    type: choice
-    values:
+    - 12
     - 32
     - 64
     default: 64
-  axiDataWidth:
+  fetchUserWidth:
     type: choice
     values:
+    - 1
+    - 12
     - 32
     - 64
-    - 128
     default: 64
-  icacheByteSize:
-    type: choice
-    values:
-    - 4096
-    - 8192
-    - 16384
-    - 32768
-    default: 16384
-  icacheSetAssoc:
-    type: choice
-    values:
-    - 2
-    - 4
-    - 8
-    default: 4
-  icacheLineWidth:
-    type: choice
-    values:
-    - 128
-    - 256
-    default: 128
-  dcacheByteSize:
-    type: choice
-    values:
-    - 8192
-    - 16384
-    - 32768
-    - 65536
-    default: 32768
-  dcacheSetAssoc:
-    type: choice
-    values:
-    - 2
-    - 4
-    - 8
-    default: 8
-  dcacheLineWidth:
-    type: choice
-    values:
-    - 128
-    - 256
-    default: 128
-  btbEntries:
-    type: choice
-    values:
-    - 0
-    - 8
-    - 16
-    - 32
-    - 64
-    default: 32
-  bhtEntries:
-    type: choice
-    values:
-    - 0
-    - 32
-    - 64
-    - 128
-    - 256
-    default: 128
-  rasDepth:
-    type: choice
-    values:
-    - 0
-    - 2
-    - 4
-    - 8
-    default: 2
-  scoreboardEntries:
-    type: choice
-    values:
-    - 4
-    - 8
-    - 16
-    default: 8
-  loadBufEntries:
-    type: choice
-    values:
-    - 2
-    - 4
-    - 8
-    default: 2
-  pmpEntries:
-    type: choice
-    values:
-    - 0
-    - 8
-    - 16
-    default: 8
-  wbufDepth:
-    type: choice
-    values:
-    - 4
-    - 8
-    - 16
-    default: 8
 emit:
 - kind: foreign
   lang: sv
@@ -213,42 +107,7 @@ emit:
   - third_party/cva6/core/cvfpu/src/fpu_div_sqrt_mvp/hdl/nrbd_nrsc_mvp.sv
   - third_party/cva6/core/cvfpu/src/fpu_div_sqrt_mvp/hdl/preprocess_mvp.sv
   - third_party/cva6/core/include/config_pkg.sv
-  - path: third_party/cva6/core/include/cv32a60x_config_pkg.sv
-    when:
-      cfg: cv32a60x
-  - path: third_party/cva6/core/include/cv32a65x_config_pkg.sv
-    when:
-      cfg: cv32a65x
-  - path: third_party/cva6/core/include/cv32a6_ima_sv32_fpga_config_pkg.sv
-    when:
-      cfg: cv32a6_ima_sv32_fpga
-  - path: third_party/cva6/core/include/cv32a6_imac_sv32_config_pkg.sv
-    when:
-      cfg: cv32a6_imac_sv32
-  - path: third_party/cva6/core/include/cv64a60ax_config_pkg.sv
-    when:
-      cfg: cv64a60ax
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_hpdcache
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_hpdcache_wb_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_hpdcache_wb
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_openpiton_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_openpiton
-  - path: third_party/cva6/core/include/cv64a6_imafdc_sv39_wb_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdc_sv39_wb
-  - path: third_party/cva6/core/include/cv64a6_imafdch_sv39_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdch_sv39
-  - path: third_party/cva6/core/include/cv64a6_imafdch_sv39_wb_config_pkg.sv
-    when:
-      cfg: cv64a6_imafdch_sv39_wb
+  - gen/cva6_config_pkg.sv
   - third_party/cva6/core/include/riscv_pkg.sv
   - third_party/cva6/core/include/ariane_pkg.sv
   - third_party/cva6/vendor/pulp-platform/axi/src/axi_pkg.sv
@@ -319,6 +178,7 @@ emit:
   - third_party/cva6/core/commit_stage.sv
   - third_party/cva6/core/axi_shim.sv
   - third_party/cva6/core/cva6_accel_first_pass_decoder_stub.sv
+  - third_party/cva6/core/acc_dispatcher.sv
   - third_party/cva6/core/cva6_fifo_v3.sv
   - third_party/cva6/core/frontend/btb.sv
   - third_party/cva6/core/frontend/bht.sv
@@ -327,6 +187,7 @@ emit:
   - third_party/cva6/core/frontend/instr_scan.sv
   - third_party/cva6/core/frontend/instr_queue.sv
   - third_party/cva6/core/frontend/frontend.sv
+  - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/utils/hpdcache_to_l15.sv
   - third_party/cva6/core/cache_subsystem/wt_dcache_ctrl.sv
   - third_party/cva6/core/cache_subsystem/wt_dcache_mem.sv
   - third_party/cva6/core/cache_subsystem/wt_dcache_missunit.sv
@@ -342,6 +203,7 @@ emit:
   - third_party/cva6/core/cache_subsystem/cva6_icache_axi_wrapper.sv
   - third_party/cva6/core/cache_subsystem/std_cache_subsystem.sv
   - third_party/cva6/core/cache_subsystem/std_nbdcache.sv
+  - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/utils/hpdcache_l15_resp_demux.sv
   - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/hpdcache_pkg.sv
   - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/utils/hpdcache_mem_req_read_arbiter.sv
   - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/utils/hpdcache_mem_req_write_arbiter.sv
@@ -399,6 +261,8 @@ emit:
   - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/utils/hpdcache_mem_to_axi_read.sv
   - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/utils/hpdcache_mem_to_axi_write.sv
   - third_party/cva6/core/include/dummy_l15_pkg.sv
+  - third_party/cva6/core/cache_subsystem/hpdcache/rtl/src/utils/hpdcache_l15_req_arbiter.sv
+  - third_party/cva6/core/cache_subsystem/cva6_hpdcache_subsystem_l15_adapter.sv
   - third_party/cva6/core/cache_subsystem/cva6_hpdcache_subsystem.sv
   - third_party/cva6/core/cache_subsystem/cva6_hpdcache_subsystem_axi_arbiter.sv
   - third_party/cva6/core/cache_subsystem/cva6_hpdcache_if_adapter.sv
@@ -422,9 +286,6 @@ emit:
   - third_party/cva6/core/cva6_mmu/cva6_ptw.sv
   - third_party/cva6/core/cva6_mmu/cva6_tlb.sv
   - third_party/cva6/core/cva6_mmu/cva6_shared_tlb.sv
-  - path: gen/cva6_config_pkg.sv
-    when:
-      cfg: xirang
   includes:
   - third_party/cva6/core/include
   - third_party/cva6/vendor/pulp-platform/common_cells/include
@@ -489,108 +350,767 @@ emit:
   generate:
   - out: gen/cva6_config_pkg.sv
     from: third_party/cva6/core/include/cv64a6_imafdc_sv39_config_pkg.sv
-    when:
-      cfg: xirang
-      xlen: 64
-    syntax: localparam
+    syntax:
+    - localparam
+    - field
+    expose: all
+    skip: []
+    domain:
+      CVA6ConfigRVZiCond:
+      - 0
+      - 1
+      CVA6ConfigF16En:
+      - 0
+      - 1
+      CVA6ConfigMmuPresent:
+      - 0
+      - 1
+      CVA6ConfigCExtEn:
+      - 0
+      - 1
+      CVA6ConfigTvalEn:
+      - 0
+      - 1
+      CVA6ConfigRVD:
+      - 0
+      - 1
+      CVA6ConfigAExtEn:
+      - 0
+      - 1
+      CVA6ConfigZcbExtEn:
+      - 0
+      - 1
+      CVA6ConfigFVecEn:
+      - 0
+      - 1
+      CVA6ConfigCvxifEn:
+      - 0
+      - 1
+      CVA6ConfigRVF:
+      - 0
+      - 1
+      CVA6ConfigBExtEn:
+      - 0
+      - 1
+      CVA6ConfigZcmpExtEn:
+      - 0
+      - 1
+      CVA6ConfigF16AltEn:
+      - 0
+      - 1
+      CVA6ConfigPerfCounterEn:
+      - 0
+      - 1
+      CVA6ConfigF8En:
+      - 0
+      - 1
+      CVA6ConfigXlen:
+      - 32
+      - 64
+      CVA6ConfigAxiIdWidth:
+      - 4
+      - 8
+      CVA6ConfigAxiAddrWidth:
+      - 32
+      - 39
+      - 64
+      CVA6ConfigAxiDataWidth:
+      - 32
+      - 64
+      - 128
+      CVA6ConfigIcacheByteSize:
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      CVA6ConfigIcacheSetAssoc:
+      - 2
+      - 4
+      - 8
+      CVA6ConfigIcacheLineWidth:
+      - 128
+      - 256
+      - 512
+      CVA6ConfigDcacheByteSize:
+      - 2028
+      - 8192
+      - 16384
+      - 32768
+      - 65536
+      CVA6ConfigDcacheSetAssoc:
+      - 2
+      - 4
+      - 8
+      CVA6ConfigDcacheLineWidth:
+      - 128
+      - 256
+      - 512
+      CVA6ConfigBTBEntries:
+      - 0
+      - 8
+      - 16
+      - 32
+      - 64
+      CVA6ConfigBHTEntries:
+      - 0
+      - 32
+      - 64
+      - 128
+      - 256
+      CVA6ConfigRASDepth:
+      - 2
+      - 4
+      - 8
+      CVA6ConfigNrScoreboardEntries:
+      - 4
+      - 8
+      - 16
+      CVA6ConfigNrLoadBufEntries:
+      - 2
+      - 4
+      - 8
+      CVA6ConfigNrPMPEntries:
+      - 0
+      - 8
+      - 16
+      CVA6ConfigWtDcacheWbufDepth:
+      - 2
+      - 4
+      - 7
+      - 8
+      - 16
+      CVA6ConfigDcacheIdWidth:
+      - 1
+      - 2
+      - 3
+      CVA6ConfigMemTidWidth:
+      - 2
+      - 4
+      CoproType:
+      - config_pkg::COPRO_EXAMPLE
+      - config_pkg::COPRO_NONE
+      BPType:
+      - config_pkg::BHT
+      NOCType:
+      - config_pkg::NOC_TYPE_AXI4_ATOP
+      - config_pkg::NOC_TYPE_L15_BIG_ENDIAN
+      DCacheType:
+      - config_pkg::HPDCACHE_WB
+      - config_pkg::HPDCACHE_WT
+      - config_pkg::WB
+      - config_pkg::WT
+      CVA6ConfigDcacheType:
+      - config_pkg::HPDCACHE_WB
+      - config_pkg::HPDCACHE_WT
+      - config_pkg::WB
+      - config_pkg::WT
+      CVA6ConfigDataUserWidth:
+      - 12
+      - 32
+      - 64
+      XLEN:
+      - 32
+      - 64
+      VLEN:
+      - 32
+      - 64
+      FpgaEn:
+      - 0
+      - 1
+      TechnoCut:
+      - 0
+      - 1
+      SuperscalarEn:
+      - 0
+      - 1
+      ALUBypass:
+      - 0
+      - 1
+      NrCommitPorts:
+      - 1
+      - 2
+      AxiAddrWidth:
+      - 39
+      - 64
+      AxiDataWidth:
+      - 64
+      - 128
+      AxiUserWidth:
+      - 12
+      - 32
+      - 64
+      MemTidWidth:
+      - 2
+      - 4
+      NrLoadBufEntries:
+      - 2
+      - 8
+      RVF:
+      - 0
+      - 1
+      RVD:
+      - 0
+      - 1
+      RVA:
+      - 0
+      - 1
+      RVB:
+      - 0
+      - 1
+      ZKN:
+      - 0
+      - 1
+      RVV:
+      - 0
+      - 1
+      RVC:
+      - 0
+      - 1
+      RVH:
+      - 0
+      - 1
+      RVZCB:
+      - 0
+      - 1
+      CvxifEn:
+      - 0
+      - 1
+      RVZiCond:
+      - 0
+      - 1
+      RVZiCbom:
+      - 0
+      - 1
+      RVZicntr:
+      - 0
+      - 1
+      RVZihpm:
+      - 0
+      - 1
+      NrScoreboardEntries:
+      - 4
+      - 8
+      PerfCounterEn:
+      - 0
+      - 1
+      MmuPresent:
+      - 0
+      - 1
+      RVS:
+      - 0
+      - 1
+      RVU:
+      - 0
+      - 1
+      SoftwareInterruptEn:
+      - 0
+      - 1
+      BTBEntries:
+      - 0
+      - 16
+      - 32
+      BHTEntries:
+      - 32
+      - 64
+      - 128
+      DmBaseAddress:
+      - 0
+      - 50331648
+      TvalEn:
+      - 0
+      - 1
+      DirectVecOnly:
+      - 0
+      - 1
+      NrPMPEntries:
+      - 0
+      - 8
+      PMPNapotEn:
+      - 0
+      - 1
+      NrNonIdempotentRules:
+      - 0
+      - 1
+      - 2
+      NrExecuteRegionRules:
+      - 0
+      - 3
+      - 6
+      NrCachedRegionRules:
+      - 1
+      - 2
+      DebugEn:
+      - 0
+      - 1
+      IcacheByteSize:
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      IcacheSetAssoc:
+      - 2
+      - 4
+      - 8
+      IcacheLineWidth:
+      - 128
+      - 512
+      DcacheByteSize:
+      - 2028
+      - 8192
+      - 32768
+      DcacheSetAssoc:
+      - 2
+      - 4
+      - 8
+      DcacheLineWidth:
+      - 128
+      - 256
+      - 512
+      DcacheFlushOnFence:
+      - 0
+      - 1
+      DcacheFlushOnFenceI:
+      - 0
+      - 1
+      DataUserEn:
+      - 0
+      - 1
+      WtDcacheWbufDepth:
+      - 2
+      - 7
+      - 8
+      FetchUserWidth:
+      - 1
+      - 32
+      - 64
+      FetchUserEn:
+      - 0
+      - 1
+      InstrTlbEntries:
+      - 2
+      - 16
+      DataTlbEntries:
+      - 2
+      - 16
+      UseSharedTlb:
+      - 0
+      - 1
+      SvnapotEn:
+      - 0
+      - 1
+      NrLoadPipeRegs:
+      - 0
+      - 1
+      CVA6ConfigHExtEn:
+      - 0
+      - 1
+      CVA6ConfigVExtEn:
+      - 0
+      CVA6ConfigFetchUserWidth:
+      - 1
+      - 32
+      - 64
+      CVA6ConfigDcacheFlushOnFence:
+      - 0
+      - 1
+      CVA6ConfigDcacheFlushOnFenceI:
+      - 0
+      - 1
+      CVA6ConfigFetchUserEn:
+      - 0
+      - 1
+      CVA6ConfigDataUserEn:
+      - 0
+      - 1
+      CVA6ConfigNrLoadPipeRegs:
+      - 0
+      - 1
     set:
-      axiIdWidth: CVA6ConfigAxiIdWidth
-      axiAddrWidth: CVA6ConfigAxiAddrWidth
-      axiDataWidth: CVA6ConfigAxiDataWidth
-      icacheByteSize: CVA6ConfigIcacheByteSize
-      icacheSetAssoc: CVA6ConfigIcacheSetAssoc
-      icacheLineWidth: CVA6ConfigIcacheLineWidth
-      dcacheByteSize: CVA6ConfigDcacheByteSize
-      dcacheSetAssoc: CVA6ConfigDcacheSetAssoc
-      dcacheLineWidth: CVA6ConfigDcacheLineWidth
-      btbEntries: CVA6ConfigBTBEntries
-      bhtEntries: CVA6ConfigBHTEntries
-      rasDepth: CVA6ConfigRASDepth
-      scoreboardEntries: CVA6ConfigNrScoreboardEntries
-      loadBufEntries: CVA6ConfigNrLoadBufEntries
-      pmpEntries: CVA6ConfigNrPMPEntries
-      wbufDepth: CVA6ConfigWtDcacheWbufDepth
-      rvf: CVA6ConfigRVF
-      rvd: CVA6ConfigRVD
-      cExt: CVA6ConfigCExtEn
-      aExt: CVA6ConfigAExtEn
-      bExt: CVA6ConfigBExtEn
-      zcbExt: CVA6ConfigZcbExtEn
-      zicond: CVA6ConfigRVZiCond
-      cvxif: CVA6ConfigCvxifEn
-      mmu: CVA6ConfigMmuPresent
-      perfCounter: CVA6ConfigPerfCounterEn
-      tval: CVA6ConfigTvalEn
-  - out: gen/cva6_config_pkg.sv
-    from: third_party/cva6/core/include/cv32a6_imac_sv32_config_pkg.sv
-    when:
-      cfg: xirang
-      xlen: 32
-    syntax: localparam
-    set:
-      axiIdWidth: CVA6ConfigAxiIdWidth
-      axiAddrWidth: CVA6ConfigAxiAddrWidth
-      axiDataWidth: CVA6ConfigAxiDataWidth
-      icacheByteSize: CVA6ConfigIcacheByteSize
-      icacheSetAssoc: CVA6ConfigIcacheSetAssoc
-      icacheLineWidth: CVA6ConfigIcacheLineWidth
-      dcacheByteSize: CVA6ConfigDcacheByteSize
-      dcacheSetAssoc: CVA6ConfigDcacheSetAssoc
-      dcacheLineWidth: CVA6ConfigDcacheLineWidth
-      btbEntries: CVA6ConfigBTBEntries
-      bhtEntries: CVA6ConfigBHTEntries
-      rasDepth: CVA6ConfigRASDepth
-      scoreboardEntries: CVA6ConfigNrScoreboardEntries
-      loadBufEntries: CVA6ConfigNrLoadBufEntries
-      pmpEntries: CVA6ConfigNrPMPEntries
-      wbufDepth: CVA6ConfigWtDcacheWbufDepth
-      rvf: CVA6ConfigRVF
-      rvd: CVA6ConfigRVD
-      cExt: CVA6ConfigCExtEn
-      aExt: CVA6ConfigAExtEn
-      zcbExt: CVA6ConfigZcbExtEn
-      zicond: CVA6ConfigRVZiCond
-      cvxif: CVA6ConfigCvxifEn
-      mmu: CVA6ConfigMmuPresent
-      perfCounter: CVA6ConfigPerfCounterEn
-      tval: CVA6ConfigTvalEn
+      dataUserWidth: CVA6ConfigDataUserWidth
+      fetchUserWidth: CVA6ConfigFetchUserWidth
 test:
   noarea:
   - cfg
+  - ALUBypass
+  - AxiAddrWidth
+  - AxiDataWidth
+  - AxiUserWidth
+  - BHTEntries
+  - BPType
+  - BTBEntries
+  - CVA6ConfigAExtEn
+  - CVA6ConfigAxiAddrWidth
+  - CVA6ConfigAxiDataWidth
+  - CVA6ConfigAxiIdWidth
+  - CVA6ConfigBExtEn
+  - CVA6ConfigBHTEntries
+  - CVA6ConfigBTBEntries
+  - CVA6ConfigCExtEn
+  - CVA6ConfigCvxifEn
+  - CVA6ConfigDataUserEn
+  - CVA6ConfigDataUserWidth
+  - CVA6ConfigDcacheByteSize
+  - CVA6ConfigDcacheFlushOnFence
+  - CVA6ConfigDcacheFlushOnFenceI
+  - CVA6ConfigDcacheIdWidth
+  - CVA6ConfigDcacheLineWidth
+  - CVA6ConfigDcacheSetAssoc
+  - CVA6ConfigDcacheType
+  - CVA6ConfigF16AltEn
+  - CVA6ConfigF16En
+  - CVA6ConfigF8En
+  - CVA6ConfigFVecEn
+  - CVA6ConfigFetchUserEn
+  - CVA6ConfigFetchUserWidth
+  - CVA6ConfigHExtEn
+  - CVA6ConfigIcacheByteSize
+  - CVA6ConfigIcacheLineWidth
+  - CVA6ConfigIcacheSetAssoc
+  - CVA6ConfigMemTidWidth
+  - CVA6ConfigMmuPresent
+  - CVA6ConfigNrLoadBufEntries
+  - CVA6ConfigNrLoadPipeRegs
+  - CVA6ConfigNrPMPEntries
+  - CVA6ConfigNrScoreboardEntries
+  - CVA6ConfigPerfCounterEn
+  - CVA6ConfigRASDepth
+  - CVA6ConfigRVD
+  - CVA6ConfigRVF
+  - CVA6ConfigRVZiCond
+  - CVA6ConfigTvalEn
+  - CVA6ConfigVExtEn
+  - CVA6ConfigWtDcacheWbufDepth
+  - CVA6ConfigXlen
+  - CVA6ConfigZcbExtEn
+  - CVA6ConfigZcmpExtEn
+  - CoproType
+  - CvxifEn
+  - DCacheType
+  - DataTlbEntries
+  - DataUserEn
+  - DcacheByteSize
+  - DcacheFlushOnFence
+  - DcacheFlushOnFenceI
+  - DcacheLineWidth
+  - DcacheSetAssoc
+  - DebugEn
+  - DirectVecOnly
+  - DmBaseAddress
+  - FetchUserEn
+  - FetchUserWidth
+  - FpgaEn
+  - IcacheByteSize
+  - IcacheLineWidth
+  - IcacheSetAssoc
+  - InstrTlbEntries
+  - MemTidWidth
+  - MmuPresent
+  - NOCType
+  - NrCachedRegionRules
+  - NrCommitPorts
+  - NrExecuteRegionRules
+  - NrLoadBufEntries
+  - NrLoadPipeRegs
+  - NrNonIdempotentRules
+  - NrPMPEntries
+  - NrScoreboardEntries
+  - PMPNapotEn
+  - PerfCounterEn
+  - RVA
+  - RVB
+  - RVC
+  - RVD
+  - RVF
+  - RVH
+  - RVS
+  - RVU
+  - RVV
+  - RVZCB
+  - RVZiCbom
+  - RVZiCond
+  - RVZicntr
+  - RVZihpm
+  - SoftwareInterruptEn
+  - SuperscalarEn
+  - SvnapotEn
+  - TechnoCut
+  - TvalEn
+  - UseSharedTlb
+  - VLEN
+  - WtDcacheWbufDepth
+  - XLEN
+  - ZKN
+  extra:
+  - CVA6ConfigXlen: 32
+    CVA6ConfigAxiDataWidth: 32
 targets:
   foreign:
     driver: foreign
-features:
-  rvf:
-    type: bool
-    default: true
-  rvd:
-    type: bool
-    default: true
-  cExt:
-    type: bool
-    default: true
-  aExt:
-    type: bool
-    default: true
-  bExt:
-    type: bool
-    default: true
-  zcbExt:
-    type: bool
-    default: true
-  zicond:
-    type: bool
-    default: true
-  cvxif:
-    type: bool
-    default: true
-  mmu:
-    type: bool
-    default: true
-  perfCounter:
-    type: bool
-    default: true
-  tval:
-    type: bool
-    default: true
+guards:
+- when:
+    CVA6ConfigXlen: 32
+  narrow:
+    CVA6ConfigRVD:
+    - 0
+  why: RV32 开 D 扩展时上游把 FLen 推成 64，issue_read_operands.sv:676 的 {XLEN - FLen{1'b0}} 复制份数为负，展开报 value must be positive
+- when:
+    CVA6ConfigRVF: 0
+  narrow:
+    CVA6ConfigRVD:
+    - 0
+  why: D 扩展依赖 F：上游的 FLen 推导链里 RVD 直接短路掉 RVF 那一档，只开 D 得到的是一个 RISC-V 里不存在的 ISA
+- when:
+    CVA6ConfigRVF: 0
+    CVA6ConfigRVD: 0
+    CVA6ConfigF16En: 0
+    CVA6ConfigF16AltEn: 0
+  narrow:
+    CVA6ConfigF8En:
+    - 0
+  why: FP8 单独开时 FLen=8，而 cvfpu 的除法开方单元只支持 64/32/16 位，fpnew_divsqrt_th_64_multi.sv:193 当场 $fatal。要开 FP8 得同时留一种更宽的格式
+- when:
+    CVA6ConfigRVF: 0
+    CVA6ConfigRVD: 0
+    CVA6ConfigF16En: 0
+    CVA6ConfigF16AltEn: 0
+    CVA6ConfigF8En: 0
+  narrow:
+    CVA6ConfigFVecEn:
+    - 0
+  why: 一种浮点格式都没开时向量浮点没有可向量化的格式，上游的 RVFVec/XF16Vec/XF8Vec 全部恒零
+- when:
+    CVA6ConfigXlen: 64
+  narrow:
+    CVA6ConfigAxiDataWidth:
+    - 64
+    - 128
+  why: wt_axi_adapter.sv:145 把一拍 AXI 数据拼成 AxiDataWidth/XLEN 份，AXI 数据通路窄于 XLEN 时份数为零，展开报「复制常数只能为零」
+- when:
+    CVA6ConfigXlen: 32
+  narrow:
+    VLEN:
+    - 32
+  why: branch_unit.sv:124 把异常地址拼成 {XLEN - VLEN{...}}，虚地址宽于 XLEN 时复制份数为负
+- when:
+    CVA6ConfigDcacheType: config_pkg::HPDCACHE_WT
+  narrow:
+    CVA6ConfigMemTidWidth:
+    - 4
+    CVA6ConfigWtDcacheWbufDepth:
+    - 2
+    - 4
+    - 7
+    - 8
+  why: hpdcache 把写缓冲的每一项、每一次未命中都编一个 mem ID：2^MemTidWidth-1 要装得下写缓冲深度与 NrLoadBufEntries，不够时 hpdcache.sv 的 $fatal 在展开期就打出来
+- when:
+    CVA6ConfigDcacheType: config_pkg::HPDCACHE_WB
+  narrow:
+    CVA6ConfigMemTidWidth:
+    - 4
+    CVA6ConfigWtDcacheWbufDepth:
+    - 2
+    - 4
+    - 7
+  why: 写回档还要留半个 ID 空间给回写与 flush，所以比写通档再紧一档：2^(MemTidWidth-1)-1 要装得下 flushEntries
+- when:
+    NOCType: config_pkg::NOC_TYPE_L15_BIG_ENDIAN
+  narrow:
+    CVA6ConfigDcacheType:
+    - config_pkg::WT
+    - config_pkg::WB
+  why: 走 OpenPiton 的 L15 接口时，树上只有 dummy_l15_pkg——它自己写着「真包在 OpenPiton 里」。标准缓存的适配器用不到那些字段，hpdcache 的适配器要 l15_val 等等，展开报 no member named
+profiles:
+  by: cfg
+  sets:
+    cv32a60x:
+      CVA6ConfigXlen: 32
+      VLEN: 32
+      TechnoCut: 1
+      NrCommitPorts: 1
+      CVA6ConfigMemTidWidth: 4
+      CVA6ConfigRVF: 0
+      CVA6ConfigRVD: 0
+      CVA6ConfigAExtEn: 0
+      ZKN: 0
+      CoproType: config_pkg::COPRO_EXAMPLE
+      CVA6ConfigRVZiCond: 0
+      RVZicntr: 0
+      RVZihpm: 0
+      CVA6ConfigNrScoreboardEntries: 4
+      CVA6ConfigPerfCounterEn: 0
+      CVA6ConfigMmuPresent: 0
+      RVS: 0
+      RVU: 0
+      SoftwareInterruptEn: 0
+      CVA6ConfigBTBEntries: 0
+      CVA6ConfigBHTEntries: 32
+      CVA6ConfigTvalEn: 0
+      DirectVecOnly: 1
+      CVA6ConfigNrPMPEntries: 0
+      PMPNapotEn: 0
+      NrNonIdempotentRules: 0
+      NrExecuteRegionRules: 0
+      DebugEn: 0
+      CVA6ConfigIcacheByteSize: 2048
+      CVA6ConfigIcacheSetAssoc: 2
+      CVA6ConfigDcacheType: config_pkg::HPDCACHE_WT
+      CVA6ConfigDcacheByteSize: 2028
+      CVA6ConfigDcacheSetAssoc: 2
+      CVA6ConfigDataUserEn: 1
+      CVA6ConfigFetchUserEn: 1
+      InstrTlbEntries: 2
+      DataTlbEntries: 2
+      UseSharedTlb: 1
+      SvnapotEn: 0
+      CVA6ConfigNrLoadPipeRegs: 0
+      dataUserWidth: 32
+      fetchUserWidth: 32
+    cv32a65x:
+      CVA6ConfigXlen: 32
+      VLEN: 32
+      TechnoCut: 1
+      SuperscalarEn: 1
+      ALUBypass: 1
+      NrCommitPorts: 1
+      CVA6ConfigMemTidWidth: 4
+      CVA6ConfigRVF: 0
+      CVA6ConfigRVD: 0
+      CVA6ConfigAExtEn: 0
+      ZKN: 0
+      CoproType: config_pkg::COPRO_EXAMPLE
+      CVA6ConfigRVZiCond: 0
+      RVZicntr: 0
+      RVZihpm: 0
+      CVA6ConfigPerfCounterEn: 0
+      CVA6ConfigMmuPresent: 0
+      RVS: 0
+      RVU: 0
+      SoftwareInterruptEn: 0
+      CVA6ConfigBTBEntries: 0
+      CVA6ConfigBHTEntries: 32
+      CVA6ConfigTvalEn: 0
+      DirectVecOnly: 1
+      PMPNapotEn: 0
+      NrNonIdempotentRules: 0
+      NrExecuteRegionRules: 0
+      DebugEn: 0
+      CVA6ConfigIcacheByteSize: 2048
+      CVA6ConfigIcacheSetAssoc: 2
+      CVA6ConfigDcacheType: config_pkg::HPDCACHE_WT
+      CVA6ConfigDcacheByteSize: 2028
+      CVA6ConfigDcacheSetAssoc: 2
+      CVA6ConfigDataUserEn: 1
+      CVA6ConfigFetchUserEn: 1
+      InstrTlbEntries: 2
+      DataTlbEntries: 2
+      UseSharedTlb: 1
+      SvnapotEn: 0
+      CVA6ConfigNrLoadPipeRegs: 0
+      dataUserWidth: 32
+      fetchUserWidth: 32
+    cv32a6_ima_sv32_fpga:
+      CVA6ConfigXlen: 32
+      VLEN: 32
+      FpgaEn: 1
+      NrCommitPorts: 1
+      CVA6ConfigRVF: 0
+      CVA6ConfigRVD: 0
+      CVA6ConfigBExtEn: 0
+      ZKN: 0
+      CVA6ConfigCExtEn: 0
+      CVA6ConfigZcbExtEn: 0
+      CVA6ConfigCvxifEn: 0
+      CVA6ConfigRVZiCond: 0
+      CVA6ConfigNrScoreboardEntries: 4
+      CVA6ConfigPerfCounterEn: 0
+      CVA6ConfigNrPMPEntries: 0
+      CVA6ConfigIcacheByteSize: 8192
+      CVA6ConfigIcacheSetAssoc: 2
+      CVA6ConfigDcacheByteSize: 8192
+      CVA6ConfigDcacheSetAssoc: 2
+      CVA6ConfigWtDcacheWbufDepth: 2
+      InstrTlbEntries: 2
+      DataTlbEntries: 2
+      UseSharedTlb: 1
+      SvnapotEn: 0
+      dataUserWidth: 32
+      fetchUserWidth: 32
+    cv32a6_imac_sv32:
+      CVA6ConfigXlen: 32
+      VLEN: 32
+      CVA6ConfigMemTidWidth: 4
+      CVA6ConfigRVF: 0
+      CVA6ConfigRVD: 0
+      CVA6ConfigZcbExtEn: 0
+      CVA6ConfigCvxifEn: 0
+      CVA6ConfigRVZiCond: 0
+      NrNonIdempotentRules: 1
+      CVA6ConfigDcacheType: config_pkg::HPDCACHE_WT
+      InstrTlbEntries: 2
+      DataTlbEntries: 2
+      UseSharedTlb: 1
+      SvnapotEn: 0
+      dataUserWidth: 32
+      fetchUserWidth: 32
+    cv64a60ax:
+      CVA6ConfigAxiAddrWidth: 39
+      CVA6ConfigAxiDataWidth: 128
+      CVA6ConfigMemTidWidth: 4
+      CVA6ConfigNrLoadBufEntries: 8
+      ZKN: 0
+      CoproType: config_pkg::COPRO_EXAMPLE
+      RVZiCbom: 1
+      CVA6ConfigBTBEntries: 16
+      CVA6ConfigBHTEntries: 64
+      DmBaseAddress: 50331648
+      NrExecuteRegionRules: 6
+      NrCachedRegionRules: 2
+      CVA6ConfigIcacheByteSize: 32768
+      CVA6ConfigIcacheSetAssoc: 8
+      CVA6ConfigIcacheLineWidth: 512
+      CVA6ConfigDcacheType: config_pkg::HPDCACHE_WT
+      CVA6ConfigDcacheLineWidth: 512
+      SvnapotEn: 0
+      CVA6ConfigNrLoadPipeRegs: 0
+      dataUserWidth: 12
+      fetchUserWidth: 32
+    cv64a6_imafdc_sv39_hpdcache:
+      CVA6ConfigMemTidWidth: 4
+      CVA6ConfigNrLoadBufEntries: 8
+      RVZiCbom: 1
+      CVA6ConfigDcacheType: config_pkg::HPDCACHE_WT
+      SvnapotEn: 0
+    cv64a6_imafdc_sv39_hpdcache_wb:
+      CVA6ConfigMemTidWidth: 4
+      CVA6ConfigNrLoadBufEntries: 8
+      RVZiCbom: 1
+      CVA6ConfigDcacheType: config_pkg::HPDCACHE_WB
+      CVA6ConfigDcacheFlushOnFenceI: 1
+      CVA6ConfigWtDcacheWbufDepth: 7
+      SvnapotEn: 0
+    cv64a6_imafdc_sv39_openpiton:
+      CVA6ConfigBExtEn: 0
+      ZKN: 0
+      CVA6ConfigZcbExtEn: 0
+      CVA6ConfigCvxifEn: 0
+      CVA6ConfigRVZiCond: 0
+      NOCType: config_pkg::NOC_TYPE_L15_BIG_ENDIAN
+      SvnapotEn: 0
+    cv64a6_imafdc_sv39_wb:
+      ZKN: 0
+      CVA6ConfigDcacheType: config_pkg::WB
+      CVA6ConfigDcacheFlushOnFenceI: 1
+      SvnapotEn: 0
+    cv64a6_imafdch_sv39:
+      ZKN: 0
+      CVA6ConfigHExtEn: 1
+      SvnapotEn: 0
+    cv64a6_imafdch_sv39_wb:
+      ZKN: 0
+      CVA6ConfigHExtEn: 1
+      CVA6ConfigDcacheType: config_pkg::WB
+      CVA6ConfigDcacheFlushOnFence: 1
+      CVA6ConfigDcacheFlushOnFenceI: 1
+      SvnapotEn: 0
